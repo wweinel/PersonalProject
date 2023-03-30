@@ -1,3 +1,4 @@
+import re
 from bs4 import BeautifulSoup
 from selenium.webdriver import Chrome
 from selenium.webdriver.chrome.options import Options
@@ -13,9 +14,11 @@ with Chrome(options=chrome_options) as browser:
      browser.get(url)
      loaded_sucessfully = 0
      #while(loaded_sucessfully == 0):
-     wait = WebDriverWait(browser, 10) # Wait up to 5 seconds for the element to be present
-     #wait.until(EC.presence_of_element_located((By.CLASS_NAME, 'center pa3')))
+     wait = WebDriverWait(browser, 20) # Wait up to 5 seconds for the element to be present
+     wait.until(EC.presence_of_element_located((By.ID, 'top-of-reviews')))
+
      dom = browser.execute_script("return document.documentElement.outerHTML")
+     """
      check_soup = BeautifulSoup(dom, 'html.parser')
      loading = check_soup.find("div", {"data-testid": "reviewsLoading"})
 
@@ -24,7 +27,7 @@ with Chrome(options=chrome_options) as browser:
                loaded_sucessfully = 1
      else:
                print("Loading failed")
-
+     """
 
 page_soup = BeautifulSoup(dom, 'html.parser')
 good_soup = page_soup.find(id="__render-farm")
@@ -33,13 +36,19 @@ good_soup = page_soup.find(id="__render-farm")
 
 
 
-container = good_soup.find(id="top-of-reviews")
+block = good_soup.find(id="top-of-reviews")
+container = block.find_all("div", class_="flex row")
 # open a file in write mode
+for container in container:
+     rating = container.find("div", class_="flex-shrink-0 mr2")
+     rating = rating.get('aria-label')
+     date = container.find("span", class_="f5 self-start relative kpl-color-text-primary")
+     date = date.text.strip()
+     print(rating, " on ", date )
+
 
 with open('output.txt', 'w') as file:
      #write a string to the file
-     if(loaded_sucessfully == 1):
-          for container in container:
+     
+     for container in container:
                file.write(str(container))
-     else:
-               file.write(str(good_soup))
