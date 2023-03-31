@@ -14,7 +14,7 @@ chrome_options.add_argument("--headless") # Opens the browser up in background
 ratings = []
 dates = []
 
-for page_num in range (1,3):
+for page_num in range (1,21):
      with Chrome(options=chrome_options) as browser:
           page_url = url.format(page_num)
           browser.get(page_url)
