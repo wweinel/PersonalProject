@@ -44,6 +44,6 @@ def scrape(url:str,startPage:int,endPage:int,csvName:str):
                dates.append(date)
           
      df = pd.DataFrame({"rating out of 5": ratings, "date": dates}) # Adding columnn headers to dataframe
-     df.to_csv(csvName, index=False) # Writing dataframe to file.csv
+     df.to_csv("data/" + csvName, index=False) # Writing dataframe to file.csv
      return df
 
