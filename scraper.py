@@ -7,36 +7,34 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import pandas as pd
 
+# 'scrape' function that takes in the following parameters
+#         'url' of website in form "https...pg={}"
+#         'startPage' to 'endPage' includes all the pages you want 'scrape' to look through
+#         'csvName' name of .csv file to be created or overwritten with data
+#         returns pandas dataframe of webpage data       
 def scrape(url:str,startPage:int,endPage:int,csvName:str):
-
-     #url = "https://www.creditkarma.com/reviews/personal-loan/single/id/upstart-personal-loans?pg={}"
      chrome_options = Options()  
      chrome_options.add_argument("--headless") # Opens the browser up in background
 
-     ratings = []
+     # Columns for data collected through 'scrape' function
+     ratings = [] 
      dates = []
 
+     # Looping through every page between startPage-endPage inclusive
      for page_num in range (startPage,(endPage+1)):
           with Chrome(options=chrome_options) as browser:
                page_url = url.format(page_num)
                browser.get(page_url)
-               loaded_sucessfully = 0
-               #while(loaded_sucessfully == 0):
-               wait = WebDriverWait(browser, 20) # Wait up to 5 seconds for the element to be present
+               wait = WebDriverWait(browser, 20) # Wait up to 20 seconds for the element to be present
                wait.until(EC.presence_of_element_located((By.ID, 'top-of-reviews')))
-
                dom = browser.execute_script("return document.documentElement.outerHTML")
 
           page_soup = BeautifulSoup(dom, 'html.parser')
           good_soup = page_soup.find(id="__render-farm")
-
-          #containers = page_soup.findAll("div",{"class":"center pa3"})
-
-
-
           block = good_soup.find(id="top-of-reviews")
           container = block.find_all("div", class_="flex row")
-     
+
+          # Looping through review 'container' to find rating (int of 5) and date (Mon Day, Year)
           for container in container:
                rating = container.find("div", class_="flex-shrink-0 mr2")
                rating = rating.get('aria-label')
@@ -44,12 +42,8 @@ def scrape(url:str,startPage:int,endPage:int,csvName:str):
                date = container.find("span", class_="f5 self-start relative kpl-color-text-primary")
                date = date.text.strip()
                dates.append(date)
-               #print(rating, " on ", date )
           
-     df = pd.DataFrame({"rating out of 5": ratings, "date": dates})
-      # writing dataframe
-     df.to_csv(csvName, index=False)
+     df = pd.DataFrame({"rating out of 5": ratings, "date": dates}) # Adding columnn headers to dataframe
+     df.to_csv(csvName, index=False) # Writing dataframe to file.csv
      return df
-
-#url = "https://www.creditkarma.com/reviews/personal-loan/single/id/upstart-personal-loans?pg={}"
 
