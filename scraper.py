@@ -9,7 +9,7 @@ import pandas as pd
 
 def scrape(url:str,startPage:int,endPage:int,csvName:str):
 
-     url = "https://www.creditkarma.com/reviews/personal-loan/single/id/upstart-personal-loans?pg={}"
+     #url = "https://www.creditkarma.com/reviews/personal-loan/single/id/upstart-personal-loans?pg={}"
      chrome_options = Options()  
      chrome_options.add_argument("--headless") # Opens the browser up in background
 
@@ -26,16 +26,6 @@ def scrape(url:str,startPage:int,endPage:int,csvName:str):
                wait.until(EC.presence_of_element_located((By.ID, 'top-of-reviews')))
 
                dom = browser.execute_script("return document.documentElement.outerHTML")
-               """
-               check_soup = BeautifulSoup(dom, 'html.parser')
-               loading = check_soup.find("div", {"data-testid": "reviewsLoading"})
-
-               if loading is None:
-                         print("Loaded Successfully")
-                         loaded_sucessfully = 1
-               else:
-                         print("Loading failed")
-               """
 
           page_soup = BeautifulSoup(dom, 'html.parser')
           good_soup = page_soup.find(id="__render-farm")
@@ -46,7 +36,7 @@ def scrape(url:str,startPage:int,endPage:int,csvName:str):
 
           block = good_soup.find(id="top-of-reviews")
           container = block.find_all("div", class_="flex row")
-          # open a file in write mode
+     
           for container in container:
                rating = container.find("div", class_="flex-shrink-0 mr2")
                rating = rating.get('aria-label')
@@ -57,5 +47,9 @@ def scrape(url:str,startPage:int,endPage:int,csvName:str):
                #print(rating, " on ", date )
           
      df = pd.DataFrame({"rating out of 5": ratings, "date": dates})
+      # writing dataframe
      df.to_csv(csvName, index=False)
-     print(df)
+     return df
+
+#url = "https://www.creditkarma.com/reviews/personal-loan/single/id/upstart-personal-loans?pg={}"
+
