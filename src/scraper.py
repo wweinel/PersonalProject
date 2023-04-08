@@ -7,6 +7,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import pandas as pd
 
+
 # 'scrape' function that takes in the following parameters
 #         'url' of website in form "https...pg={}"
 #         'startPage' to 'endPage' includes all the pages you want 'scrape' to look through
@@ -25,7 +26,7 @@ def scrape(url:str,startPage:int,endPage:int,csvName:str):
           with Chrome(options=chrome_options) as browser:
                page_url = url.format(page_num)
                browser.get(page_url)
-               wait = WebDriverWait(browser, 20) # Wait up to 20 seconds for the element to be present
+               wait = WebDriverWait(browser, 40) # Wait up to 20 seconds for the element to be present
                wait.until(EC.presence_of_element_located((By.ID, 'top-of-reviews')))
                dom = browser.execute_script("return document.documentElement.outerHTML")
 
